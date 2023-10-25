@@ -18,12 +18,27 @@ router.get("/", async function(req, res, next) {
 router.get("/:code", async function(req, res, next) {
     try {
         const code = req.params.code;
-        const results = await db.query(
-            "SELECT * FROM companies WHERE code=$1", [code]);
-        if(results.rows.length === 0) {
+        const cResult = await db.query(
+           `SELECT code, name, description 
+            FROM companies
+            WHERE code=$1`, [code]);
+
+        const invResult = await db.query(
+            `SELECT id
+            FROM invoices
+            WHERE comp_code=$1`,
+            [code]
+        );
+        if(cResult.rows.length === 0) {
             throw new ExpressError(`Company with code '${code}' could not be found`, 404);
         }
-         else return res.json({company: results.rows[0]});
+
+        const company = cResult.rows[0];
+        const invoices = invResult.rows;
+
+        company.invoices = invoices.map(inv => inv.id);
+        
+        return res.json({"company": company});
 
     } catch(err) {
         next(err);
@@ -58,7 +73,7 @@ router.put("/:code", async function(req, res, next) {
         }
 
         const code = req.params.code;
-        const { name, description } = req.query;
+        const { name, description } = req.body;
         const result = await db.query(
             `UPDATE companies
             SET name=$1,
