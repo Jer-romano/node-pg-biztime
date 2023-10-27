@@ -19,14 +19,43 @@ CREATE TABLE invoices (
     CONSTRAINT invoices_amt_check CHECK ((amt > (0)::double precision))
 );
 
+CREATE TABLE industries (
+  code text PRIMARY KEY,
+  industry text NOT NULL UNIQUE
+);
+
+CREATE TABLE companies_industries (
+  comp_code text NOT NULL REFERENCES companies,
+  ind_code text NOT NULL REFERENCES industries,
+  PRIMARY KEY(comp_code, ind_code)
+);
+
+
 INSERT INTO companies
   VALUES ('apple', 'Apple Computer', 'Maker of OSX.'),
-         ('ibm', 'IBM', 'Big blue.');
+         ('ibm', 'IBM', 'Big blue.'),
+         ('chip', 'Chipotle', 'Mexican-style Restaurant Chain.'),
+         ('coke', 'Coca-Cola', 'Producer of various sodas worldwide.');
 
 INSERT INTO invoices (comp_Code, amt, paid, paid_date)
   VALUES ('apple', 100, false, null),
          ('apple', 200, false, null),
          ('apple', 300, true, '2018-01-01'),
          ('ibm', 400, false, null);
+
+INSERT INTO industries
+  VALUES ('tech', 'Technology'),
+         ('ent', 'Entertainment'),
+         ('hosp', 'Hospitality'),
+         ('ret', 'Retail'),
+         ('fab', 'Food & Beverage');
+
+INSERT INTO companies_industries
+VALUES ('apple', 'tech'),
+       ('apple', 'ent'),
+       ('chip', 'fab'),
+       ('chip', 'hosp'),
+       ('ibm', 'tech'),
+       ('coke', 'fab');
 
 \q

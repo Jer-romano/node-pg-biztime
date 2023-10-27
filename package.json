@@ -12,6 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "pg": "^8.11.3"
+    "moment-timezone": "^0.5.43",
+    "pg": "^8.11.3",
+    "slugify": "^1.6.6",
+    "supertest": "^6.3.3"
   }
 }
